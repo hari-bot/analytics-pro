@@ -1,7 +1,7 @@
 "use client"
 
 const TikTokLogin = () => {
-  const TIKTOK_AUTH_URL = `https://www.tiktok.com/v2/auth/authorize?client_key=${process.env.NEXT_PUBLIC_TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.stats,user.info.profile&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_TIKTOK_REDIRECT_URI!)}`;
+  const TIKTOK_AUTH_URL = `https://www.tiktok.com/v2/auth/authorize?client_key=${process.env.NEXT_PUBLIC_TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.stats,user.info.profile,video.list&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_TIKTOK_REDIRECT_URI!)}`;
 
   return (
     <div className="flex justify-center items-center h-screen">
