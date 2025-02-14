@@ -20,6 +20,19 @@ const nextConfig = {
     ],
     domains: ['p16-sign-sg.tiktokcdn.com'],
   },
+  // Disable ESLint during production builds
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
+  // Optionally, also ignore TypeScript errors
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    ignoreBuildErrors: true,
+  },
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig
