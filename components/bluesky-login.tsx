@@ -29,16 +29,18 @@ const BlueskyLogin = () => {
       const profileData = await profileRes.json()
       setProfile(profileData)
 
-      const postsRes = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${data.did}`, {
+      const postsRes = await fetch(`https://bsky.social/xrpc/app.bsky.feed.getAuthorFeed?actor=${data.did}&limit=20`, {
         headers: { Authorization: `Bearer ${data.accessJwt}` },
       })
 
       if (!postsRes.ok) throw new Error("Failed to fetch posts")
       const postsData = await postsRes.json()
-      setPosts(postsData.feed || [])
+      console.log('Posts data:', postsData)
+      setPosts(postsData.feed.map((item: any) => item.post) || [])
 
       setError(null)
     } catch (err: any) {
+      console.error("Login error:", err)
       setError(err.message)
       setProfile(null)
       setPosts([])
@@ -46,76 +48,112 @@ const BlueskyLogin = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md border border-gray-200">
-      <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">Bluesky Login</h2>
-
-      {/* Grid Layout for Better Structure */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Login Form */}
-        <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
-          <h3 className="text-lg font-medium mb-4">Login</h3>
-          <input
-            type="text"
-            placeholder="Bluesky Handle"
-            value={handle}
-            onChange={(e) => setHandle(e.target.value)}
-            className="border p-2 w-full rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-3"
-          />
-          <input
-            type="password"
-            placeholder="App Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 w-full rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-3"
-          />
-          <button
-            onClick={handleLogin}
-            className="bg-blue-500 text-white p-2 rounded-md w-full font-medium transition hover:bg-blue-600"
-          >
-            Login
-          </button>
-          {error && <p className="text-red-500 text-center mt-3">{error}</p>}
-        </div>
-
-        {/* Profile Card */}
-        {profile && (
-          <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
-            <div className="flex items-center space-x-4">
-              <img
-                src={profile.avatar || "/placeholder.svg"}
-                alt="Avatar"
-                className="w-16 h-16 rounded-full border-2 border-blue-500"
+    <div className="max-w-4xl mx-auto p-8">
+      {!profile ? (
+        <div className="bg-[#242830] rounded-lg shadow-lg overflow-hidden">
+          <div className="p-6 text-center">
+            <div className="mb-6">
+              <img 
+                src="/bluesky-logo.png" 
+                alt="Bluesky" 
+                className="w-16 h-16 mx-auto"
               />
-              <div>
-                <h3 className="text-lg font-semibold">{profile.displayName}</h3>
-                <p className="text-gray-600">@{profile.handle}</p>
-                <p className="text-sm text-gray-500">{profile.description}</p>
-              </div>
             </div>
-            <div className="mt-4 flex justify-between text-sm text-gray-700">
-              <p>
-                <span className="font-semibold">Followers:</span> {profile.followersCount}
-              </p>
-              <p>
-                <span className="font-semibold">Following:</span> {profile.followsCount}
-              </p>
-              <p>
-                <span className="font-semibold">Posts:</span> {profile.postsCount}
-              </p>
+            <h2 className="text-2xl font-bold text-white mb-4">Connect Your Bluesky Account</h2>
+            <p className="text-gray-400 mb-8">
+              Link your Bluesky account to analyze your social presence and engagement
+            </p>
+            
+            <div className="max-w-sm mx-auto space-y-4">
+              <input
+                type="text"
+                value={handle}
+                onChange={(e) => setHandle(e.target.value)}
+                placeholder="Handle (e.g., @you.bsky.social)"
+                className="w-full px-4 py-2 bg-[#1c1f26] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="App Password"
+                className="w-full px-4 py-2 bg-[#1c1f26] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              />
+              <button
+                onClick={handleLogin}
+                className="w-full bg-[#0560ff] hover:bg-[#0351d4] text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                Login with Bluesky
+              </button>
+              {error && (
+                <p className="text-red-500 text-sm">{error}</p>
+              )}
             </div>
           </div>
-        )}
-      </div>
+          <div className="bg-[#1c1f26] p-4 text-center">
+            <p className="text-gray-400 text-sm">
+              By connecting, you agree to our Terms of Service and Privacy Policy
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Profile Card */}
+          <div className="bg-[#242830] rounded-lg shadow-lg p-6">
+            <div className="flex flex-col md:flex-row md:items-start space-y-4 md:space-y-0 md:space-x-6">
+              <div className="flex-shrink-0">
+                <img
+                  src={profile.avatar}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full border-2 border-blue-500"
+                />
+              </div>
+              <div className="flex-grow">
+                <div className="mb-4">
+                  <h2 className="text-2xl font-bold text-white">{profile.displayName}</h2>
+                  <p className="text-gray-400">@{profile.handle}</p>
+                </div>
+                {profile.description && (
+                  <p className="text-gray-300 mb-4">{profile.description}</p>
+                )}
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div className="bg-[#2d3139] p-3 rounded-lg">
+                    <p className="text-2xl font-bold text-white">{profile.followersCount || 0}</p>
+                    <p className="text-sm text-gray-400">Followers</p>
+                  </div>
+                  <div className="bg-[#2d3139] p-3 rounded-lg">
+                    <p className="text-2xl font-bold text-white">{profile.followsCount || 0}</p>
+                    <p className="text-sm text-gray-400">Following</p>
+                  </div>
+                  <div className="bg-[#2d3139] p-3 rounded-lg">
+                    <p className="text-2xl font-bold text-white">{profile.postsCount || 0}</p>
+                    <p className="text-sm text-gray-400">Posts</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  onClick={() => {
+                    setProfile(null)
+                    setPosts([])
+                  }}
+                  className="text-red-500 hover:text-red-600 px-4 py-2 rounded-md border border-red-500 hover:border-red-600 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
 
-      {/* Recent Posts Section */}
-      {posts.length > 0 && (
-        <div className="mt-6 p-6 bg-gray-50 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Recent Posts</h3>
-          <ul className="space-y-4">
-            {posts.map((item, index) => (
-              <BlueskyPost key={index} post={item.post} />
-            ))}
-          </ul>
+          {/* Posts Section */}
+          <div className="bg-[#242830] rounded-lg shadow-lg p-6">
+            <h3 className="text-xl font-semibold text-white mb-4">Recent Posts</h3>
+            <ul className="space-y-4">
+              {posts.map((post, index) => (
+                <BlueskyPost key={index} post={post} />
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>

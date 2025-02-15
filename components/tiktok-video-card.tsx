@@ -37,7 +37,7 @@ const TikTokVideoCard = ({ video }: { video: VideoStats }) => {
       href={video.share_url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+      className="block block bg-[#2d3139] text-white hover:bg-[#363b45] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
     >
       <div className="relative">
         <img 
