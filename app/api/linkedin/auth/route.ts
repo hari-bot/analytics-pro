@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const accessToken = tokenData.access_token;
 
     // Fetch user profile
-    const profileRes = await fetch("https://api.linkedin.com/v2/userinfo", {
+    const profileRes = await fetch("https://api.linkedin.com/v2/me", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 

@@ -1,7 +1,7 @@
 "use client"
 
 const LinkedInLogin = () => {
-  const LINKEDIN_AUTH_URL = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_LINKEDIN_REDIRECT_URI!)}&scope=openid%20profile%20w_member_social%20email`;
+  const LINKEDIN_AUTH_URL = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.NEXT_PUBLIC_LINKEDIN_REDIRECT_URI!)}&scope=r_basicprofile%20r_organization_social%20rw_organization_admin`;
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -23,6 +23,7 @@ const LinkedInLogin = () => {
             className="inline-flex items-center space-x-2 bg-[#0a66c2] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#004182] transition-colors"
           >
             <span>Login with LinkedIn</span>
+            
           </a>
         </div>
         <div className="bg-[#1c1f26] p-4 text-center">

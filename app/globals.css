@@ -19,3 +19,6 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+.analytics-chart {
+  height: 400px; /* or any desired height */
+}
