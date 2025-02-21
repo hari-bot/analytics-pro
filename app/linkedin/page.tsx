@@ -17,6 +17,7 @@ const LinkedInPage = () => {
   const [analyticsData, setAnalyticsData] = useState<any[] | null>(null)
   const [selectedOrgId, setSelectedOrgId] = useState<string>("")
   const [organizations, setOrganizations] = useState<any[]>([])
+  const [profileImage, setProfileImage] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -27,7 +28,8 @@ const LinkedInPage = () => {
       setAccessToken(storedToken)
       setProfile(JSON.parse(storedProfile))
       setLoading(false)
-      fetchOrganizations(storedToken);
+      fetchProfileImage(storedToken)
+      fetchOrganizations(storedToken)
       return
     }
 
@@ -44,7 +46,8 @@ const LinkedInPage = () => {
 
             setAccessToken(data.accessToken)
             setProfile(data.profile)
-            fetchOrganizations(data.accessToken);
+            fetchProfileImage(data.accessToken)
+            fetchOrganizations(data.accessToken)
             router.replace("/linkedin")
           }
         })
@@ -53,6 +56,25 @@ const LinkedInPage = () => {
       setLoading(false)
     }
   }, [router])
+
+  const fetchProfileImage = async (token: string) => {
+    try {
+      const response = await fetch('/api/linkedin/profile-picture', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch profile image");
+      }
+
+      const data = await response.json();
+      setProfileImage(data.profilePictureUrl);
+    } catch (error) {
+      console.error("Error fetching profile image:", error);
+    }
+  };
 
   const fetchOrganizations = async (token: string) => {
     try {
@@ -142,11 +164,7 @@ const LinkedInPage = () => {
             {/* Profile Image */}
             <div className="w-24 h-24 flex-shrink-0">
               <Image
-                src={
-                  profile?.profilePicture?.displayImage
-                    ? `https://media.licdn.com/dms/image/${profile.profilePicture.displayImage}`
-                    : "/placeholder.svg"
-                }
+                src={profileImage || "/placeholder.svg"}
                 alt="Avatar"
                 className="w-24 h-24 rounded-full border-4 border-blue-500 object-cover"
                 width={96}
