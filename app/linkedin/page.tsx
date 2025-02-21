@@ -16,18 +16,7 @@ const LinkedInPage = () => {
   const [analyticsError, setAnalyticsError] = useState<string | null>(null)
   const [analyticsData, setAnalyticsData] = useState<any[] | null>(null)
   const [selectedOrgId, setSelectedOrgId] = useState<string>("")
-  const [organizations, setOrganizations] = useState<any[]>([
-    {
-      vanityName: "mojowebtech",
-      id: 67210312,
-      localizedName: "Mojo Web Technology",
-      website: {
-        localized: {
-          en_US: "https://mojowebtech.com/",
-        },
-      },
-    },
-  ])
+  const [organizations, setOrganizations] = useState<any[]>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -38,6 +27,7 @@ const LinkedInPage = () => {
       setAccessToken(storedToken)
       setProfile(JSON.parse(storedProfile))
       setLoading(false)
+      fetchOrganizations(storedToken);
       return
     }
 
@@ -54,6 +44,7 @@ const LinkedInPage = () => {
 
             setAccessToken(data.accessToken)
             setProfile(data.profile)
+            fetchOrganizations(data.accessToken);
             router.replace("/linkedin")
           }
         })
@@ -62,6 +53,26 @@ const LinkedInPage = () => {
       setLoading(false)
     }
   }, [router])
+
+  const fetchOrganizations = async (token: string) => {
+    try {
+      const response = await fetch('/api/linkedin/organizations', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch organizations");
+      }
+
+      const data = await response.json();
+      setOrganizations(data.organizations);
+    } catch (error) {
+      console.error("Error fetching organizations:", error);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("linkedin_token")
@@ -181,7 +192,7 @@ const LinkedInPage = () => {
               </option>
               {organizations.map((org) => (
                 <option key={org.id} value={org.id}>
-                  {org.vanityName} ({org.localizedName})
+                  {org.vanityName} 
                 </option>
               ))}
             </select>

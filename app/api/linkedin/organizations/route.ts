@@ -29,7 +29,6 @@ export async function GET(req: NextRequest) {
 
     const orgData = await orgResponse.json();
     const elements = orgData.elements || [];
-    console.log(orgData);
 
     if (elements.length === 0) {
       return NextResponse.json({ error: "No organizations found" }, { status: 404 });
